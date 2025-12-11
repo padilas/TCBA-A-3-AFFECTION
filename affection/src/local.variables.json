@@ -1,0 +1,27 @@
+{
+  "sql_server": "asyifadhilah.database.windows.net",
+  "sql_database": "tcba",
+  "sql_username": "asyifa",
+  "sql_password": "TCBAsd004",
+  "sql_table": "affection",
+
+  "source": "csv",
+  "input_csv_path": "data/WESAD_Wrist_Combined_S2_S3_S4_S14.csv",
+
+  "output_dir": "outputs",
+  "model_output_path": "outputs/models/rf_wesad.joblib",
+  "features_output_path": "outputs/models/features.json",
+  "metrics_output_path": "outputs/metrics/metrics.json",
+
+  "window_size": 10,
+  "window_step": 5,
+  "label_threshold": 0.2,
+
+  "test_size": 0.2,
+  "random_state": 42,
+
+  "cv_n_splits": 4,
+  "tuning_n_iter": 20,
+  "tuning_scoring": "accuracy",
+  "top_k_features": 20
+}

@@ -1,0 +1,16 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+name: affection-tcba-fix-v6
+endpoint_name: affection-tcba-a-3
+model: azureml:affection-rf-model:1
+code_configuration:
+  code: .
+  scoring_script: score.py
+environment: azureml:TCBA-A-3:1
+instance_type: Standard_F4s_v2
+instance_count: 1
+environment_variables:
+  sql_server: "asyifadhilah.database.windows.net"
+  sql_database: "tcba"
+  sql_username: "asyifa"
+  sql_password: "TCBAsd004"
+  sql_table: "affection"

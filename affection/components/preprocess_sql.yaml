@@ -1,0 +1,28 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: preprocess_sql_fix_v7
+display_name: Preprocess SQL data
+type: command
+inputs:
+  sql_server:
+    type: string
+  sql_database:
+    type: string
+  sql_username:
+    type: string
+  sql_password:
+    type: string
+  sql_table:
+    type: string
+outputs:
+  output_data:
+    type: uri_folder
+code: ../src
+command: >-
+  python preprocess_sql.py
+  --sql_server ${{inputs.sql_server}}
+  --sql_database ${{inputs.sql_database}}
+  --sql_username ${{inputs.sql_username}}
+  --sql_password ${{inputs.sql_password}}
+  --sql_table ${{inputs.sql_table}}
+  --output_data ${{outputs.output_data}}
+environment: azureml:TCBA-A-3:1

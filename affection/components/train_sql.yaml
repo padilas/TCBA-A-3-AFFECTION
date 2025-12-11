@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: train_sql_fix_v5
+display_name: Train RF model from SQL
+type: command
+inputs:
+  input_data:
+    type: uri_folder
+outputs:
+  model_output:
+    type: uri_folder
+  features_output:
+    type: uri_folder
+  metrics_output:
+    type: uri_folder
+code: ../src
+command: >-
+  python train_sql.py
+  --input_data ${{inputs.input_data}}
+  --model_output ${{outputs.model_output}}
+  --features_output ${{outputs.features_output}}
+  --metrics_output ${{outputs.metrics_output}}
+environment: azureml:TCBA-A-3:1

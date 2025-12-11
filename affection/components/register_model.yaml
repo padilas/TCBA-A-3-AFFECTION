@@ -1,0 +1,27 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: register_model_fix_v10
+display_name: Register model
+type: command
+
+inputs:
+  model_path:
+    type: uri_file
+  features_path:
+    type: uri_file
+  metrics_path:
+    type: uri_file
+
+outputs:
+  registered_model_info:
+    type: uri_file
+
+code: ../src
+
+command: >-
+  python register_model.py
+  --model_path ${{inputs.model_path}}
+  --features_path ${{inputs.features_path}}
+  --metrics_path ${{inputs.metrics_path}}
+  --registered_model_info ${{outputs.registered_model_info}}
+
+environment: azureml:TCBA-A-3:1

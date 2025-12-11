@@ -1,0 +1,13 @@
+{
+    "best_params": {
+        "class_weight": "balanced",
+        "max_depth": 4,
+        "min_samples_leaf": 4,
+        "min_samples_split": 10,
+        "n_estimators": 50
+    },
+    "best_cv_f1_macro": 0.8803279627344676,
+    "train_accuracy": 0.8934504285260819,
+    "test_accuracy": 0.8948370715192552,
+    "gap": -0.0013866429931732593
+}

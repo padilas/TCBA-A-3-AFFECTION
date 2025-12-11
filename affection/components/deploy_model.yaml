@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: deploy_model_fix_v11
+display_name: Deploy model to endpoint
+type: command
+
+inputs:
+  model_id:
+    type: uri_file
+  endpoint_name:
+    type: string
+  deployment_name:
+    type: string
+
+code: ../src
+
+command: >-
+  python deploy_model.py
+  --model_id ${{inputs.model_id}}
+  --endpoint_name ${{inputs.endpoint_name}}
+  --deployment_name ${{inputs.deployment_name}}
+
+environment: azureml:TCBA-A-3:1
