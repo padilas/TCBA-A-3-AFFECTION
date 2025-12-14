@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
-name: preprocess_sql_fix_v7
+name: preprocess_sql_fix_v11
 display_name: Preprocess SQL data
 type: command
 inputs:
@@ -25,4 +25,4 @@ command: >-
   --sql_password ${{inputs.sql_password}}
   --sql_table ${{inputs.sql_table}}
   --output_data ${{outputs.output_data}}
-environment: azureml:TCBA-A-3:1
+environment: azureml:TCBA_ML_A_3:4

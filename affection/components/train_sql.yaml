@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
-name: train_sql_fix_v5
+name: train_sql_fix_v12
 display_name: Train RF model from SQL
 type: command
 inputs:
@@ -19,4 +19,4 @@ command: >-
   --model_output ${{outputs.model_output}}
   --features_output ${{outputs.features_output}}
   --metrics_output ${{outputs.metrics_output}}
-environment: azureml:TCBA-A-3:1
+environment: azureml:TCBA_ML_A_3:4

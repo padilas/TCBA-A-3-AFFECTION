@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
-name: deploy_model_fix_v11
+name: deploy_model_fix_v21
 display_name: Deploy model to endpoint
 type: command
 
@@ -19,4 +19,4 @@ command: >-
   --endpoint_name ${{inputs.endpoint_name}}
   --deployment_name ${{inputs.deployment_name}}
 
-environment: azureml:TCBA-A-3:1
+environment: azureml:TCBA_ML_A_3:4

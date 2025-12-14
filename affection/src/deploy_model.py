@@ -1,13 +1,20 @@
 import argparse
 import os
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, InteractiveBrowserCredential
 from azure.ai.ml import MLClient
 from azure.ai.ml.entities import ManagedOnlineDeployment, CodeConfiguration
+from azure.ai.ml.entities import OnlineEndpoint
 
-def main(model_id_file: str, endpoint_name: str, deployment_name: str):
-    with open(model_id_file, "r") as f:
-        model_id = f.read().strip()
-    ml_client = MLClient.from_config(DefaultAzureCredential())
+def main(model_id_arg: str, endpoint_name: str, deployment_name: str):
+    if os.path.isfile(model_id_arg):
+        with open(model_id_arg, "r") as f:
+            model_id = f.read().strip()
+    else:
+        model_id = model_id_arg
+    try:
+        ml_client = MLClient.from_config(DefaultAzureCredential())
+    except Exception:
+        ml_client = MLClient.from_config(InteractiveBrowserCredential())
     deployment = ManagedOnlineDeployment(
         name=deployment_name,
         endpoint_name=endpoint_name,
@@ -16,7 +23,7 @@ def main(model_id_file: str, endpoint_name: str, deployment_name: str):
             code=".",
             scoring_script="score.py"
         ),
-        environment="azureml:TCBA-A-3:1",
+        environment="azureml:TCBA_ML_A_3:4",
         instance_type="Standard_F4s_v2",
         instance_count=1,
         environment_variables={
@@ -27,9 +34,13 @@ def main(model_id_file: str, endpoint_name: str, deployment_name: str):
             "sql_table": os.environ.get("sql_table", ""),
         }
     )
-
     ml_client.online_deployments.begin_create_or_update(deployment).result()
-    print(f"[DEPLOYED] Model {model_id} ke endpoint {endpoint_name}")
+    print(f"[DEPLOYED] Model {model_id} ke endpoint {endpoint_name} dengan deployment {deployment_name}")
+    
+    endpoint = ml_client.online_endpoints.get(name=endpoint_name)
+    endpoint.traffic = {deployment_name: 100}
+    ml_client.online_endpoints.begin_create_or_update(endpoint).result()
+    print(f"[TRAFFIC] Endpoint {endpoint_name} diarahkan 100% ke {deployment_name}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

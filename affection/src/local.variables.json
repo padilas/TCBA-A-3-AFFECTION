@@ -10,6 +10,7 @@
 
   "output_dir": "outputs",
   "model_output_path": "outputs/models/rf_wesad.joblib",
+  "scaler_output_path": "outputs/models/scaler.joblib",
   "features_output_path": "outputs/models/features.json",
   "metrics_output_path": "outputs/metrics/metrics.json",
 

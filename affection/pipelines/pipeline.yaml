@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
 type: pipeline
-name: affection-rf-v35
+name: affection-rf-v33
 experiment_name: affection-rf-final
 description: End-to-end retrain pipeline (SQL → Train → Register → Deploy)
 
@@ -10,7 +10,7 @@ settings:
 jobs:
   preprocess:
     type: command
-    component: azureml:preprocess_sql_fix_v7:1
+    component: azureml:preprocess_sql_fix_v11:1
     inputs:
       sql_server: "asyifadhilah.database.windows.net"
       sql_database: "tcba"
@@ -22,7 +22,7 @@ jobs:
 
   train:
     type: command
-    component: azureml:train_sql_fix_v5:1
+    component: azureml:train_sql_fix_v12:1
     inputs:
       input_data: ${{parent.jobs.preprocess.outputs.output_data}}
     outputs:
@@ -32,7 +32,7 @@ jobs:
       
   register:
     type: command
-    component: azureml:register_model_fix_v10:1
+    component: azureml:register_model_fix_v18:1
     inputs:
       model_path: ${{parent.jobs.train.outputs.model_output}}
       features_path: ${{parent.jobs.train.outputs.features_output}}
@@ -42,8 +42,8 @@ jobs:
 
   deploy:
     type: command
-    component: azureml:deploy_model_fix_v11:1
+    component: azureml:deploy_model_fix_v21:1
     inputs:
       model_id: ${{parent.jobs.register.outputs.registered_model_info}}
-      endpoint_name: affection-tcba-a-3
-      deployment_name: affection-tcba-fix-v10
+      endpoint_name: tcba-a-3
+      deployment_name: affection-tcba-fix-v6

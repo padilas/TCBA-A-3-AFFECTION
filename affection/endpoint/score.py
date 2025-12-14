@@ -54,7 +54,20 @@ def run(raw):
             sample["ACC_X"]**2 + sample["ACC_Y"]**2 + sample["ACC_Z"]**2
         )
 
-        df = pd.DataFrame([sample])[feature_names]
+        base_df = pd.DataFrame([sample])
+
+        expected = feature_names
+        model_expected = getattr(model, "feature_names_in_", None)
+        if model_expected is not None:
+            expected = list(model_expected)
+        if expected is None:
+            expected = list(base_df.columns)
+
+        for col in expected:
+            if col not in base_df.columns:
+                base_df[col] = 0.0
+
+        df = base_df[expected]
 
         pred = int(model.predict(df)[0])
 

@@ -1,5 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
-name: register_model_fix_v10
+name: register_model_fix_v18
 display_name: Register model
 type: command
 
@@ -24,4 +24,4 @@ command: >-
   --metrics_path ${{inputs.metrics_path}}
   --registered_model_info ${{outputs.registered_model_info}}
 
-environment: azureml:TCBA-A-3:1
+environment: azureml:TCBA_ML_A_3:4

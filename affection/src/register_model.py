@@ -1,15 +1,27 @@
 import argparse
-from azure.identity import DefaultAzureCredential
+import os
+from azure.identity import DefaultAzureCredential, InteractiveBrowserCredential
 from azure.ai.ml import MLClient
 from azure.ai.ml.entities import Model
-import os
+
+def _first_existing(base_dir, candidates):
+    for name in candidates:
+        p = os.path.join(base_dir, name)
+        if os.path.exists(p):
+            return p
+    return os.path.join(base_dir, candidates[0])
+
 
 def main(model_path: str, features_path: str, metrics_path: str, output_file: str):
-    ml_client = MLClient.from_config(DefaultAzureCredential())
+    try:
+        ml_client = MLClient.from_config(DefaultAzureCredential())
+    except Exception:
+        ml_client = MLClient.from_config(InteractiveBrowserCredential())
 
-    model_file = os.path.join(model_path, "model.pkl")
-    features_file = os.path.join(features_path, "features.txt")
-    metrics_file = os.path.join(metrics_path, "metrics.txt")
+    # Support multiple artifact filenames
+    model_file = _first_existing(model_path, ["rf_wesad.joblib"])
+    features_file = _first_existing(features_path, ["features.json"]) 
+    metrics_file = _first_existing(metrics_path, ["metrics.json"]) 
 
     model = Model(
         path=model_file,
