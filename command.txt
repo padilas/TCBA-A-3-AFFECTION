@@ -1,0 +1,140 @@
+# PIPELINE
+-- 1
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az login
+Select the account you want to log in with. For more information on login with Azure CLI, see https://go.microsoft.com/fwlink/?linkid=2271136
+
+Retrieving tenants and subscriptions for the selection...
+
+[Tenant and subscription selection]
+
+-- 2
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az configure --defaults group=TCBA_ML workspace=TCBA_ML_A_3
+
+-- 3
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az ml component create --file components/preprocess_sql.yaml
+Class DeploymentTemplateOperations: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Uploading src (0.02 MBs): 100%|###| 17083/17083 [00:00<00:00, 81667.02it/s]
+
+[CUT]
+
+-- 4
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az ml component create --file components/train_sql.yaml
+Class DeploymentTemplateOperations: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+
+[CUT]
+
+-- 5
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az ml component create --file components/register_model.yaml
+Class DeploymentTemplateOperations: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+
+[CUT]
+
+-- 6
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az ml component create --file components/deploy_model.yaml
+Class DeploymentTemplateOperations: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+
+[CUT]
+
+-- 7
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az ml job create --file pipelines/pipeline.yaml
+Class DeploymentTemplateOperations: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class AutoDeleteSettingSchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class AutoDeleteConditionSchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class BaseAutoDeleteSettingSchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class IntellectualPropertySchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class ProtectionLevelSchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+Class BaseIntellectualPropertySchema: This is an experimental class, and may change at any time. Please see https://aka.ms/azuremlexperimental for more information.
+
+[CUT]
+
+-- 8: Ini digunain buat dapet Token yang nanti dibuat ngakses URI dari Job Retrain yang mau di trigger
+PS D:\Collage\5th-Term\TCBA\Final-Project\affection> az account get-access-token --resource https://ml.azure.com
+[CUT]
+
+---
+# TEST TRIGGER Retrain
+-- 1: Test tambah data smp 500 data, biar bisa trigger retrain
+PS D:\Collage\5th-Term\TCBA\Praktikum\TriggerAffection> for ($i = 1; $i -le 500; $i++) {
+>>
+>>     $body = @{
+>>         ACC_X = [math]::Round((Get-Random -Minimum -2 -Maximum 2), 3)
+>>         ACC_Y = [math]::Round((Get-Random -Minimum -2 -Maximum 2), 3)
+>>         ACC_Z = [math]::Round((Get-Random -Minimum -2 -Maximum 2), 3)
+>>         BVP   = Get-Random -Minimum 60 -Maximum 100
+>>         EDA   = [math]::Round((Get-Random -Minimum 0.1 -Maximum 5), 3)
+>>         TEMP  = [math]::Round((Get-Random -Minimum 35.5 -Maximum 37.5), 2)
+>>     } | ConvertTo-Json
+>>
+>>     Invoke-RestMethod `
+>>         -Uri "http://{Ini nanti isinya Trigger URI dari function app}" `
+>>         -Method POST `
+>>         -ContentType "application/json" `
+>>         -Body $body
+>>
+>>     Write-Host "Inserted data ke-$i"
+>> }
+
+Inserted data ke-1
+label buffer_count
+----- ------------
+    3            1
+    3            2
+Inserted data ke-2
+    3            3
+Inserted data ke-3
+    3            4
+Inserted data ke-4
+    3            5
+Inserted data ke-5
+.
+.
+.
+Inserted data ke-492
+    3          493
+Inserted data ke-493
+    3          494
+Inserted data ke-494
+    3          495
+Inserted data ke-495
+    3          496
+Inserted data ke-496
+    3          497
+Inserted data ke-497
+    3          498
+Inserted data ke-498
+    3          499
+Inserted data ke-499
+    3          500
+Inserted data ke-500
+
+PS D:\Collage\5th-Term\TCBA\Praktikum\TriggerAffection>
+-> Kalo ini jalan, nanti tabel TempAffection datanya lasngung masuk ke tabel Affection & data di dia di truncate semua atau = 0
+
+# Test URI yang digunakan buat trigger retrain (apakah jalan atau ga klo di test pake uri nya dan tokennya)
+Invoke-RestMethod `
+  -Method PUT `
+  -Uri "https://management.azure.com/subscriptions/{subscriptionid}/resourceGroups/{nama_resource_group}/providers/Microsoft.MachineLearningServices/workspaces/{nama_workspace}/jobs/{nama_job}?api-version=2023-10-01" `
+  -Headers @{
+    Authorization = "Bearer {Ini nanti isinya Access Token yang di dapat dari perintah az account get-access-token tadi}"
+    "properties": {
+      "jobType": "pipeline",
+      "displayName": "cmd-test-job",
+      "experimentName": "tcba-test",
+      "settings": {},
+      "jobs": {}
+    }
+  }'
+
+-> hasil:
+id         : /subscriptions/{subscriptionid}/resourceGroups/{nama_resource_group}/providers/Microsoft.MachineLearningServices/workspaces/{nama_workspace}/jobs/{nama_job}
+name       : {nama_job}
+type       : Microsoft.MachineLearningServices/workspaces/jobs
+properties : @{description=; tags=; properties=; displayName=cmd-test-job;
+             status=NotStarted; experimentName=tcba-test; services=;
+             computeId=; isArchived=False; identity=; componentId=;
+             jobType=Pipeline; settings=; jobs=; inputs=; outputs=;
+             sourceJobId=}
+systemData : @{createdAt=2025-12-14T01:51:04.1143283+00:00;
+             createdBy=Asyifa N. Fadhilah; createdByType=User}
+
+PS D:\Collage\5th-Term\TCBA\Praktikum\TriggerAffection>
